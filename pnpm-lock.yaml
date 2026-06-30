@@ -102,6 +102,9 @@ importers:
       '@x402-xec/transactions':
         specifier: 0.1.0
         version: link:../x402-xec-transactions
+      chronik-client:
+        specifier: ^4.3.0
+        version: 4.3.0
       ecash-lib:
         specifier: ^4.12.0
         version: 4.12.0

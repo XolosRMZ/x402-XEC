@@ -36,3 +36,7 @@ are not integrated yet.
 
 The mock transaction and ledger exist only in memory and are discarded when the
 process exits.
+
+`ChronikUtxoProvider` is read-only, opt-in, and disabled by default.
+`StaticUtxoProvider` remains the deterministic default for local E2E fixtures;
+this demo never instantiates `ChronikUtxoProvider`.
