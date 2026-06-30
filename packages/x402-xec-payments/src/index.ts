@@ -23,6 +23,8 @@ import {
 } from "@x402-xec/transactions";
 import type { Signatory } from "ecash-lib";
 
+export * from "./chronik-utxo-provider.js";
+
 export const PAYMENT_SIGNATURE_HEADER = "PAYMENT-SIGNATURE" as const;
 
 export interface PaymentPreparationRequest {
@@ -38,8 +40,8 @@ export interface UtxoProviderRequest {
 }
 
 /**
- * Supplies an already-known, ordered UTXO snapshot. Implementations used here
- * must be local/offline; network discovery belongs outside this package.
+ * Supplies an ordered UTXO snapshot. Implementations may be deterministic and
+ * local, or an explicitly configured read-only discovery adapter.
  */
 export interface UtxoProvider {
   getUtxos(request: UtxoProviderRequest): MaybePromise<readonly FundingUtxo[]>;

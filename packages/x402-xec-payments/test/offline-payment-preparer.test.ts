@@ -24,6 +24,7 @@ import {
   shaRmd160,
 } from "ecash-lib";
 import {
+  ChronikUtxoProvider,
   OfflinePaymentPreparer,
   StaticUtxoProvider,
   type OfflinePaymentPreparerOptions,
@@ -154,6 +155,39 @@ test("prepares a deterministic PAYMENT-SIGNATURE envelope offline", async () => 
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("accepts ChronikUtxoProvider through the UtxoProvider interface", async () => {
+  const chronikProvider = new ChronikUtxoProvider({
+    endpoint: "https://chronik.example",
+    address: PAYER,
+    client: {
+      address(address: string) {
+        assert.equal(address, PAYER);
+        return {
+          async utxos() {
+            return {
+              outputScript: SOURCE_SCRIPT,
+              utxos: [{
+                outpoint: { txid: "22".repeat(32), outIdx: 1 },
+                sats: 10_000n,
+                isCoinbase: false,
+              }],
+            };
+          },
+        };
+      },
+    },
+  });
+  const preparer = new OfflinePaymentPreparer(options(
+    new DeterministicSignatureProvider(),
+    { utxoProvider: chronikProvider },
+  ));
+
+  const result = await preparer.prepare({ invoice: invoice(), resource: RESOURCE });
+
+  assert.equal(result.fundingTransaction.selectedInputs[0]?.sats, "10000");
+  assert.equal(result.fundingOutpoint.outIdx, 0);
 });
 
 test("rejects an expired invoice before reading UTXOs", async () => {
@@ -290,10 +324,9 @@ test("tampering with invoice-bound fields invalidates the signature", async () =
   }), false);
 });
 
-test("exports no network or broadcast operation", async () => {
+test("exports no fetch or broadcast operation", async () => {
   const exports = await import("../src/index.js");
   assert.equal("fetch" in exports, false);
   assert.equal("broadcast" in exports, false);
   assert.equal("broadcastTx" in exports, false);
-  assert.equal("chronik" in exports, false);
 });
