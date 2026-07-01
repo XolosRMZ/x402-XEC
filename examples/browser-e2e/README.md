@@ -26,3 +26,5 @@ Open the printed loopback URL and select **Get Weather**. The UI shows the
 initial 402, fake approval and signing steps, the retry with
 `PAYMENT-SIGNATURE`, and the protected fixture response. All HTTP traffic stays
 on the local demo server; facilitator verification is an in-process fixture.
+
+See the [successful browser E2E dry-run result](../../docs/browser-e2e-dry-run-result.md).
